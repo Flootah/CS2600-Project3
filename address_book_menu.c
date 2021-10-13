@@ -132,10 +132,53 @@ Status menu(AddressBook *address_book)
 	return e_success;
 }
 
+/* Chris Choi stuff */
+void add_contacts_menu(void)
+{
+	menu_header("Add Contact:\n");
+
+	printf("0. Back\n");
+	printf("1. Name       :\n");
+	printf("2. Phone No 1 :\n");
+	printf("3. Email ID 1 :\n");
+
+	printf("\n");
+	printf("Please select an option: ");
+}
+
 Status add_contacts(AddressBook *address_book)
 {
 	/* Add the functionality for adding contacts here */
+	
+	int option;
+	do
+	{
+		add_contacts_menu();
+
+		option = get_option(NUM, "");
+
+		switch (option)
+		{
+			case e_first_opt:
+				printf("\nEnter the name: ");
+				fgets(address_book -> name, NAME_LEN, stdin);
+				break;
+			case e_second_opt:
+				printf("\nEnter phone number 1: ");
+				fgets(address_book -> phone_numbers, NUMBER_LEN, stdin);
+				break;
+			case e_third_opt:
+				printf("\nEnter email ID 1: ");
+				fgets(address_book -> email_addresses, EMAIL_ID_LEN, stdin);
+				break;
+			case e_exit:
+				break;
+		}
+	} while (option != e_exit);
+
+	return e_success;
 }
+/*end of chris choi stuff*/
 
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
 {
