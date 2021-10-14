@@ -148,7 +148,7 @@ void add_contacts_menu(void)
 Status add_contacts(AddressBook *address_book)
 {
 	/* Add the functionality for adding contacts here */
-	
+	char yesOrNo[1];	//array used for 'y' or 'n'
 	int option;
 	do
 	{
@@ -165,10 +165,40 @@ Status add_contacts(AddressBook *address_book)
 			case e_second_opt:
 				printf("\nEnter phone number 1: ");
 				fgets(&(address_book -> list -> phone_numbers)[0][0], NUMBER_LEN, stdin);
+				/* For loop used for alternate phone numbers if user want to input any */
+				for (int i = 2, i < PHONE_NUMBER_COUNT, i++)
+				{
+					printf("\nAdd an another phone number? ('y' for yes and 'n' for no): ");
+					fgets(yesOrNo, 2, stdin);
+					if (yesOrNo[0] != 'y')	//if user input 'n' then breaks out of for loop
+					{
+						break;
+					}
+					else	//if user input 'y' then asks for i-th phone number
+					{
+						printf("\nEnter phone number %d: ", i);
+						fgets(&(address_book -> list -> phone_numbers)[i-1][0], NUMBER_LEN, stdin);
+					}
+				}
 				break;
 			case e_third_opt:
 				printf("\nEnter email ID 1: ");
 				fgets(&(address_book -> list -> email_addresses)[0][0], EMAIL_ID_LEN, stdin);
+				/* For loop used for alternate email IDs if user want to input any */
+				for (int i = 2, i < EMAIL_ID_COUNT, i++)
+				{
+					printf("\nAdd an another email ID? ('y' for yes and 'n' for no): ");
+					fgets(yesOrNo, 2, stdin);
+					if (yesOrNo[0] != 'y')	//if user input 'n' then breaks out of for loop
+					{
+						break;
+					}
+					else	//if user input 'y' then asks for i-th phone number
+					{
+						printf("\nEnter email ID %d: ", i);
+						fgets(&(address_book -> list -> email_addresses)[i-1][0], EMAIL_ID_LEN, stdin);
+					}
+				}				
 				break;
 		}
 	} while (option != e_exit);
