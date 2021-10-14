@@ -29,20 +29,28 @@ Status load_file(AddressBook *address_book)
 	 * Check for file existance
 	 */
 	FILE *fp;
-	ret = (fp = fopen(DEFAULT_FILE, "r"));
+	fp = fopen(DEFAULT_FILE, "r");
+	ret = fp != NULL;
 	if (ret == 0)
 	{
 		/* 
 		 * Do the neccessary step to open the file
 		 * Do error handling
 		 */
-		int count = 0, c;
-		while (c != EOF)
-		{
-			c = fgetc(fp);
-			if (c == NEXT_ENTRY)
-				count++;
-		}
+		int count = 0;
+		char c;
+
+		for (c = getc(fp); c != EOF; c = getc(fp))
+        	if (c == '\n') // Increment count if this character is newline
+            	count++;
+
+		// while (!feof(fp))
+		// {
+		// 	c = fgetc(fp);
+		// 	if (c == NEXT_ENTRY)
+		// 		count++;
+		// }
+		
 		rewind(fp);
 		printf("The file %s has %d lines\n ", DEFAULT_FILE, count);
 
@@ -66,7 +74,7 @@ Status load_file(AddressBook *address_book)
 			{
 				strcpy((list + index)->email_addresses[email], getfield(tmp, email + NAME_COUNT + PHONE_NUMBER_COUNT + 1)); // the plus one is because items start at 1
 			}
-			list->si_no = getfield(tmp, NAME_COUNT + PHONE_NUMBER_COUNT + EMAIL_ID_COUNT + 1);
+			list->si_no = *getfield(tmp, NAME_COUNT + PHONE_NUMBER_COUNT + EMAIL_ID_COUNT + 1);
 			free(tmp);
 			index++;
 		}
@@ -105,8 +113,8 @@ Status save_file(AddressBook *address_book)
 	 * Add the logic to save the file
 	 * Make sure to do error handling
 	 */
-	char *header[] = "name,phone_number1,phone_number2,phone_number3,phone_number4,phone_number5,email1,email2,email3,email4,email5,si_no";
-	fprintf("%s", header);
+	char *header = "name,phone_number1,phone_number2,phone_number3,phone_number4,phone_number5,email1,email2,email3,email4,email5,si_no";
+	fprintf(address_book->fp, "%s", header);
 	for (int person = 0; person < address_book->count; person++)
 	{
 		char line[1024];
@@ -116,7 +124,7 @@ Status save_file(AddressBook *address_book)
 			strcat(line, address_book->list->phone_numbers[phone]);
 		for(int email = 0; email < EMAIL_ID_COUNT; email++)
 			strcat(line, address_book->list->email_addresses[email]);
-		fprintf("%s,%d", line, address_book->list->si_no);
+		fprintf(address_book->fp, "%s,%d", line, address_book->list->si_no);
 	}
 
 	fclose(address_book->fp);

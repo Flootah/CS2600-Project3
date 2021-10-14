@@ -1,13 +1,12 @@
 #include <stdio.h>
-#include <stdio_ext.h>
+//#include <stdio_ext.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-#include "abk_fileops.h"
-#include "abk_log.h"
-#include "abk_menus.h"
-#include "abk.h"
+#include "address_book_fops.h"
+#include "address_book_menu.h"
+#include "address_book.h"
 
 int get_option(int type, const char *msg)
 {
@@ -63,7 +62,7 @@ void menu_header(const char *str)
 	system("clear");
 
 	printf("#######  Address Book  #######\n");
-	if (str != '\0')
+	if (*str != '\0')
 	{
 		printf("#######  %s\n", str);
 	}
@@ -161,17 +160,15 @@ Status add_contacts(AddressBook *address_book)
 		{
 			case e_first_opt:
 				printf("\nEnter the name: ");
-				fgets(address_book -> name, NAME_LEN, stdin);
+				fgets(address_book -> list -> name, NAME_LEN, stdin);
 				break;
 			case e_second_opt:
 				printf("\nEnter phone number 1: ");
-				fgets(address_book -> phone_numbers, NUMBER_LEN, stdin);
+				fgets(address_book -> list -> phone_numbers, NUMBER_LEN, stdin);
 				break;
 			case e_third_opt:
 				printf("\nEnter email ID 1: ");
-				fgets(address_book -> email_addresses, EMAIL_ID_LEN, stdin);
-				break;
-			case e_exit:
+				fgets(address_book -> list -> email_addresses, EMAIL_ID_LEN, stdin);
 				break;
 		}
 	} while (option != e_exit);
