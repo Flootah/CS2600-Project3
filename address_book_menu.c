@@ -166,7 +166,7 @@ Status add_contacts(AddressBook *address_book)
 				printf("\nEnter phone number 1: ");
 				fgets(&(address_book -> list -> phone_numbers)[0][0], NUMBER_LEN, stdin);
 				/* For loop used for alternate phone numbers if user want to input any */
-				for (int i = 2, i < PHONE_NUMBER_COUNT, i++)
+				for (int i = 2; i < PHONE_NUMBER_COUNT; i++)
 				{
 					printf("\nAdd an another phone number? ('y' for yes and 'n' for no): ");
 					fgets(yesOrNo, 2, stdin);
@@ -185,7 +185,7 @@ Status add_contacts(AddressBook *address_book)
 				printf("\nEnter email ID 1: ");
 				fgets(&(address_book -> list -> email_addresses)[0][0], EMAIL_ID_LEN, stdin);
 				/* For loop used for alternate email IDs if user want to input any */
-				for (int i = 2, i < EMAIL_ID_COUNT, i++)
+				for (int i = 2; i < EMAIL_ID_COUNT; i++)
 				{
 					printf("\nAdd an another email ID? ('y' for yes and 'n' for no): ");
 					fgets(yesOrNo, 2, stdin);
