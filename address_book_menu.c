@@ -132,14 +132,14 @@ Status menu(AddressBook *address_book)
 }
 
 /* Chris Choi stuff */
-void add_contacts_menu(void)
+void add_contacts_menu(AddressBook *address_book)
 {
-	menu_header("Add Contact:\n");
+	menu_header("\nAdd Contact: ");
 
-	printf("0. Back\n");
-	printf("1. Name       :\n");
-	printf("2. Phone No 1 :\n");
-	printf("3. Email ID 1 :\n");
+	printf("\n0. Back");
+	printf("\n1. Name       : %s", &(address_book -> list -> name)[0][0]);
+	printf("\n2. Phone No 1 : %s", &(address_book -> list -> phone_numbers)[0][0]);
+	printf("\n3. Email ID 1 : %s", &(address_book -> list -> email_addresses)[0][0]);
 
 	printf("\n");
 	printf("Please select an option: ");
@@ -152,7 +152,7 @@ Status add_contacts(AddressBook *address_book)
 	int option;
 	do
 	{
-		add_contacts_menu();
+		add_contacts_menu(address_book);
 
 		option = get_option(NUM, "");
 
