@@ -159,16 +159,16 @@ Status add_contacts(AddressBook *address_book)
 		switch (option)
 		{
 			case e_first_opt:
-				printf("\nEnter the name: ");
-				fgets(address_book -> list -> name, NAME_LEN, stdin);
+				printf("\nEnter the name: ");	
+				fgets(&(address_book -> list -> name)[0][0], NAME_LEN, stdin);
 				break;
 			case e_second_opt:
 				printf("\nEnter phone number 1: ");
-				fgets(address_book -> list -> phone_numbers, NUMBER_LEN, stdin);
+				fgets(&(address_book -> list -> phone_numbers)[0][0], NUMBER_LEN, stdin);
 				break;
 			case e_third_opt:
 				printf("\nEnter email ID 1: ");
-				fgets(address_book -> list -> email_addresses, EMAIL_ID_LEN, stdin);
+				fgets(&(address_book -> list -> email_addresses)[0][0], EMAIL_ID_LEN, stdin);
 				break;
 		}
 	} while (option != e_exit);
