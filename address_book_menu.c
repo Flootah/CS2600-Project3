@@ -16,7 +16,25 @@ int get_option(int type, const char *msg)
 	 * Read an number
 	 * Read a charcter
 	 */ 
+	printf(msg);
+	printf("\n");
+	int option;
 
+	switch(type) {
+		case NONE:
+		// just get an enter get input.
+		getc(stdin);
+		break;
+		case CHAR:
+		option = getc(stdin);
+		break;
+		case NUM:
+		option = getc(stdin);
+		if(option >= '0' && option <= '9');
+			option -= '0';
+		break;
+	}
+	return option;
 	/* Fill the code to add above functionality */
 }
 
@@ -52,14 +70,19 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 	 * The menu provide navigation option if the entries increase the page size
 	 */ 
 
+
+
+
+
 	return e_success;
 }
 
 void menu_header(const char *str)
 {
-	fflush(stdout);
+	//fflush(stdout);
+	//system("cls");
 
-	system("clear");
+	printf("\n\n\n\n\n");
 
 	printf("#######  Address Book  #######\n");
 	if (*str != '\0')
@@ -94,10 +117,10 @@ Status menu(AddressBook *address_book)
 		main_menu();
 
 		option = get_option(NUM, "");
-
+		printf("option: %d\n", option);
 		if ((address_book-> count == 0) && (option != e_add_contact))
 		{
-			get_option(NONE, "No entries found!!. Would you like to add? Use Add Contacts");
+			get_option(NONE, "No entries found!! Would you like to add? Use Add Contacts.");
 
 			continue;
 		}
@@ -106,7 +129,7 @@ Status menu(AddressBook *address_book)
 		{
 			case e_add_contact:
 				/* Add your implementation to call add_contacts function here */
-				search_contact(address_book);
+				add_contacts(address_book);
 				break;
 			case e_search_contact:
 				search_contact(address_book);
@@ -131,7 +154,6 @@ Status menu(AddressBook *address_book)
 	return e_success;
 }
 
-/* Chris Choi stuff */
 void add_contacts_menu(AddressBook *address_book)
 {
 	menu_header("\nAdd Contact: ");
@@ -205,7 +227,6 @@ Status add_contacts(AddressBook *address_book)
 
 	return e_success;
 }
-/*end of chris choi stuff*/
 
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
 {
