@@ -222,6 +222,18 @@ Status edit_contact(AddressBook *address_book)
 	/* Add the functionality for edit contacts here */
 }
 
+void delete_contacts_menu(void){
+	menu_header("Delete Contact: \n");
+
+	printf("0. Back\n");
+	printf("1. Delete by Name\n");
+	printf("2. Delete by Phone Number\n");
+	printf("3. Delete by Email Address\n");
+	printf("4. Delete by Serial Number\n");
+	printf("\n");
+	printf("Please choose an option: ");
+}
+
 Status delete_contact(AddressBook *address_book)
 {
 	/* Add the functionality for delete contacts here */
