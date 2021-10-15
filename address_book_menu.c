@@ -106,7 +106,7 @@ Status menu(AddressBook *address_book)
 		{
 			case e_add_contact:
 				/* Add your implementation to call add_contacts function here */
-				search_contact(address_book);
+				add_contacts(address_book);
 				break;
 			case e_search_contact:
 				search_contact(address_book);
@@ -131,7 +131,6 @@ Status menu(AddressBook *address_book)
 	return e_success;
 }
 
-/* Chris Choi stuff */
 void add_contacts_menu(AddressBook *address_book)
 {
 	menu_header("\nAdd Contact: ");
@@ -205,7 +204,6 @@ Status add_contacts(AddressBook *address_book)
 
 	return e_success;
 }
-/*end of chris choi stuff*/
 
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
 {
