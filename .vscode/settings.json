@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "address_book.h": "c"
+        "address_book.h": "c",
+        "address_book_fops.h": "c"
     }
 }
