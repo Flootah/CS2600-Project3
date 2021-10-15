@@ -61,7 +61,7 @@ Status save_prompt(AddressBook *address_book)
 
 	return e_success;
 }
-
+//Not sure if this will work, feel free to rework if necessary
 Status list_contacts(AddressBook *address_book, const char *title, int *index, const char *msg, Modes mode)
 {
 	/* 
@@ -69,9 +69,46 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 	 * Should be menu based
 	 * The menu provide navigation option if the entries increase the page size
 	 */ 
+/*
+	char option;
+	int amtOfLists = 0;
 
-
-
+	do{
+		// Intended to print out 3 at a time and to stop if it is more than array
+		menu_header("List of Contacts:\n");
+		for (int i = 0 + amtOfLists * 3; i < 3 + amtOfLists*3 && i < address_book->count; i++){
+			printf("Name: %s\n", address_book->list->name[i]);
+			printf("Phone Number: %s\n", address_book->list->email_addresses[i]);
+			printf("Email ID: %s\n", address_book->list->email_addresses[i]);
+			printf("Serial No:%s\n", address_book->count);
+		}
+		option = get_option(CHAR, "Enter Q to move backwards, W to move forward, and N to exit.\n");
+		switch (option){
+			case 'N':
+			//Intended to break.
+			break;
+			case 'Q':
+			// Intended to prevent going under 0
+			if (amtOfLists /= 3 <= 0)
+			{
+				amtOfLists == 0;
+			}
+			else{
+				amtOfLists -= 3;
+			}
+			case 'W':
+			//Intended to prevent going above count
+			if (amtOfLists + address_book->count > 3)
+			{
+				amtOfLists = address_book->count/3;
+			}
+			else{
+				amtOfLists =+ 3;
+			}
+		}
+	}
+	while(option!= 'N');
+*/
 
 
 	return e_success;
@@ -258,4 +295,75 @@ void delete_contacts_menu(void){
 Status delete_contact(AddressBook *address_book)
 {
 	/* Add the functionality for delete contacts here */
+	int option;
+	char input[NAME_LEN];
+    int amtOfContacts;
+	do{
+	delete_contacts_menu();
+	option = get_option(NUM,"");
+    switch (option)
+	// Mostly garbage skeleton code, feel free to delete.
+    {
+        /*case e_first_opt:
+        int contactNum;
+        char bool[1];
+        printf("Please enter the name of the contact you wish to delete.");
+        scanf("%s", input);
+         if (strcpy(input, string from search statement?) != 0){
+                while (strcpy(input, string from search statement?) != 0){
+                    printf("Invalid name. Please enter the name of the contact you wish to delete.\n");
+                    scanf("%s", input);
+                }
+            }
+        
+         some way to get amount of contacts?
+         
+            printf("Select which contact you would like to choose.\n");
+            scanf("%d", contactNum);
+            while (contactNum < 0 && contactNum > amtOfContacts)
+            {
+                printf("Invalid contact. Please select which contact you would like to choose.");
+                scanf("%d", contactNum);
+            }
+            *search & display contact
+
+        search & display contact
+        printf("Warning: This will permanently delete the contact.\n");
+        printf("Are you sure that this is the contact you would like to choose?\n");
+        printf("Enter 'y' to delete the contact; enter any other letter to return to delete menu.\n");
+        scanf("%d", bool);
+        if (strcpy(bool, 'y') == 0){
+            for (int i = )
+        }
+        else {
+            return to 
+        }
+        
+        	break;
+		case e_second_opt:
+        printf("Please enter the phone number of the contact you wish to delete.");
+        scanf("%s", input);
+         if (strcpy(input, string from search statement?) != 0){
+                while (strcpy(input, string from search statement?) != 0){
+                    printf("Invalid phone number. Please enter the name of the contact you wish to delete.\n");
+                    scanf("%s", input);
+                }
+            }
+        
+         some way to get amount of contacts?
+         	int toBeDeleted[amount of contacts that qualify?];
+            int contactNum;
+            printf("Select which contact you would like to choose.\n");
+            scanf("%d", contactNum);
+            for (i)
+            *search & display contact
+
+        search & display contact
+        printf("Warning: This will permanently delete the contact.\n");
+        printf("Are you sure that this is the contact you would like to choose?\n");
+        printf("Enter 'y' to delete the contact; enter any other letter to return to delete menu.\n");
+
+        */
+    }
+	}while (option != e_exit);
 }
