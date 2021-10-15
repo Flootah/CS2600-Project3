@@ -117,9 +117,7 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 void menu_header(const char *str)
 {
 	//fflush(stdout);
-	//system("cls");
-
-	printf("\n\n\n\n\n");
+	system("cls");
 
 	printf("#######  Address Book  #######\n");
 	if (*str != '\0')
@@ -154,7 +152,6 @@ Status menu(AddressBook *address_book)
 		main_menu();
 
 		option = get_option(NUM, "");
-		printf("option: %d\n", option);
 		if ((address_book-> count == 0) && (option != e_add_contact))
 		{
 			get_option(NONE, "No entries found!! Would you like to add? Use Add Contacts.");
@@ -178,8 +175,8 @@ Status menu(AddressBook *address_book)
 				delete_contact(address_book);
 				break;
 			case e_list_contacts:
+				list_contacts(address_book, "Contacts:", 0, "list of all contacts", e_list);
 				break;
-				/* Add your implementation to call list_contacts function here */
 			case e_save:
 				save_file(address_book);
 				break;
