@@ -34,7 +34,7 @@ typedef enum
 
 typedef enum 
 {
-	e_first_opt,
+	e_first_opt=1,
 	e_second_opt,
 	e_third_opt,
 	e_fourth_opt,

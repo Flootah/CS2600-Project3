@@ -9,23 +9,51 @@
 #include "address_book.h"
 
 /**
+ * strtok_new	- returns token even if empty field
+ * 
+ */
+char *strtok_new(char *line)
+{
+	static char *source = NULL;
+	char *p, *riturn = 0;
+	if (line != NULL)
+		source = line;
+	if (source == NULL)
+		return NULL;
+	char pbrk[2];
+	strcat(pbrk, FIELD_DELIMITER);
+	strcat(pbrk, NEXT_ENTRY);
+	if ((p = strpbrk(source, pbrk)) != NULL)
+	{
+		*p = 0;
+		riturn = source;
+		source = ++p;
+	}
+	return riturn;
+}
+/**
  * getfield	- returns the fieldNumth field from line, based on the FIELD_DELIMITER
  */
-const char *getfield(char *line, int fieldNum)
+const char *getfield(char *line, int field_num)
 {
-	const char *tok;
-	for (tok = strtok(line, FIELD_DELIMITER);
-		 tok && *tok;
-		 tok = strtok(NULL, FIELD_DELIMITER))
+	char *tok = strtok_new(line);
+	field_num++;
+	while (tok)
 	{
-		if (!fieldNum--)
-		{
-			return tok;
-		}
-		strchr(line, ',');
+		if (field_num == 1)
+			if (*tok)
+			{
+				return tok;
+			}
+			else
+			{
+				return "";
+			}
+		printf("");	// reset buffer
+		tok = strtok_new(NULL);
+		field_num--;
 	}
-
-	return NULL;
+	return tok;
 }
 
 /**
@@ -48,13 +76,8 @@ Status load_file(AddressBook *address_book)
 	FILE *fp;
 	ret = exists(DEFAULT_FILE);
 	fp = fopen(DEFAULT_FILE, "r");
-	if (ret == 1)
+	if (ret)
 	{
-		/* 
-		 * Do the neccessary step to open the file
-		 * Do error handling
-		 */
-
 		// count how many entries are in the csv
 		int count = 0;
 		char c;
@@ -92,16 +115,19 @@ Status load_file(AddressBook *address_book)
 			for (int phone = 0; phone < PHONE_NUMBER_COUNT; phone++)
 			{
 				tmp = strdup(line);
-				strcpy((address_book->list + index)->phone_numbers[phone], getfield(tmp, phone + NAME_COUNT));
+				strcpy(((address_book->list) + index)->phone_numbers[phone], getfield(tmp, phone + NAME_COUNT));
 				free(tmp);
 			}
 			for (int email = 0; email < EMAIL_ID_COUNT; email++)
 			{
 				tmp = strdup(line);
-				strcpy((address_book->list + index)->email_addresses[email], getfield(tmp, email + NAME_COUNT + PHONE_NUMBER_COUNT));
+				strcpy(((address_book->list) + index)->email_addresses[email], getfield(tmp, email + NAME_COUNT + PHONE_NUMBER_COUNT));
 				free(tmp);
 			}
-			(address_book->list + index)->si_no = atoi(getfield(tmp, NAME_COUNT + PHONE_NUMBER_COUNT + EMAIL_ID_COUNT));
+			tmp = strdup(line);
+			((address_book->list) + index)->si_no = atoi(getfield(tmp, NAME_COUNT + PHONE_NUMBER_COUNT + EMAIL_ID_COUNT));
+			printf("the num: %d\n", ((address_book->list) + index)->si_no);
+			free(tmp);
 			index++;
 		}
 		fclose(fp);
@@ -110,7 +136,6 @@ Status load_file(AddressBook *address_book)
 	{
 		/* Create a file for adding entries */
 		printf("Creating new address book...\n");
-		address_book = malloc(sizeof(FILE *) + sizeof(ContactInfo *) + sizeof(int));
 		address_book->fp = fopen(DEFAULT_FILE, "w");
 		address_book->count = 0;
 		fclose(address_book->fp);

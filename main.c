@@ -15,7 +15,6 @@ int main(void)
 	/* Load the file from .csv file if any */
 	address_book = malloc(sizeof(int) + sizeof(FILE*) + sizeof(ContactInfo*));
 	ret = load_file(address_book);
-
 	if (ret == e_success)
 	{
 		/* Show all the available menu */
