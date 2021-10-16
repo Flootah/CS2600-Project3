@@ -51,9 +51,10 @@ int ret; // boolean if file exists
 		 * Do the neccessary step to open the file
 		 * Do error handling
 		 */
+
+	// count how many entries are in the csv
     int count = 0;
     char c;
-
     for (c = getc(fp); c != EOF; c = getc(fp))
     {
       if (c == '\n') // Increment count if this character is newline
@@ -61,23 +62,20 @@ int ret; // boolean if file exists
         count++;
       }
     }
-    // while (!feof(fp))
-    // {
-    // 	c = fgetc(fp);
-    // 	if (c == NEXT_ENTRY)
-    // 		count++;
-    // }
-
     rewind(fp);
     printf("The file %s has %d entries\n", DEFAULT_FILE, count);
 
+	// create address book based on count
     address_book = malloc(sizeof(ContactInfo*) + sizeof(FILE*) + sizeof(int));
     address_book->list = malloc(count * sizeof(ContactInfo));
+    address_book->fp = fp;
+    address_book->count = count; 
 
+	// begin file read in
     fp = fopen(DEFAULT_FILE, "r");
     int index = 0;
     char line[1024];
-    fgets(line, 1024, fp); // skip header
+    fgets(line, 1024, fp); // skip header line
     while (index < count)
     {
       fgets(line, 1024, fp);
@@ -104,8 +102,6 @@ int ret; // boolean if file exists
       index++;
     }
     fclose(fp);
-    address_book->fp = fp;
-    address_book->count = count; 
   }
   else
   {
@@ -142,11 +138,11 @@ Status save_file(AddressBook *address_book)
 	{
 		char line[1024];
 		for(int name = 0; name < NAME_COUNT; name++)
-			strcat(line, address_book->list->name[name]);
+			strcat(line, ((address_book->list)+person)->name[name]);
 		for(int phone = 0; phone < PHONE_NUMBER_COUNT; phone++)
-			strcat(line, address_book->list->phone_numbers[phone]);
+			strcat(line, ((address_book->list)+person)->phone_numbers[phone]);
 		for(int email = 0; email < EMAIL_ID_COUNT; email++)
-			strcat(line, address_book->list->email_addresses[email]);
+			strcat(line, ((address_book->list)+person)->email_addresses[email]);
 		fprintf(address_book->fp, "%s,%d", line, address_book->list->si_no);
 	}
 
