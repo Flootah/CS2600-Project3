@@ -330,8 +330,72 @@ Status search_contact(AddressBook *address_book)
 	return e_success;
 }
 
+void edit_contacts_search_menu(AddressBook *address_book)
+{
+	menu_header("\nSearch Contact to Edit by: "); 
+	printf("\n0. Back"); 
+	printf("\n1. Name"); 
+	printf("\n2. Phone No");
+	printf("\n3. Email ID");
+	printf("\n4. Serial No");
+	printf("\n");
+	printf("Please select an option: ");
+}
+
+void edit_contacts_menu(AddressBook *address_book)
+{
+	menu_header("\nEdit Contact: "); 
+	printf("\n0. Back"); 
+	printf("\n1. Name       : ");
+	printf("\n2. Phone No 1 : ");
+	printf("\n3. Email ID 1 : ");
+	printf("\n");
+	printf("Please select an option: ");
+}
+
 Status edit_contact(AddressBook *address_book)
 {
+	char input[NAME_LEN];
+	char select[2];
+	int option;
+	do
+	{
+		edit_contacts_search_menu(address_book);
+		option = get_option(NUM, "");
+
+		switch (option)
+		{
+			case e_first_opt:
+				printf("Enter the name: ");
+				fgets(input, NAME_LEN, stdin);
+				search_contact(input);
+				printf("Press: [s] = Select. [q] | Cancel: ");
+					if (fgets(select, 2, stdin) == 's')
+					{
+						printf("Select a Serial Number (S.No) to Edit: ");
+						scanf("%s", NUM);
+					}
+		
+				break;
+	
+			case e_second_opt:
+				printf("\nPlease enter the phone number: ");
+				fgets(input, NUMBER_LEN, stdin);
+				search_contact(input);
+				break; 
+			case e_third_opt:
+				printf("\nPlease enter the email ID: ");
+				fgets(input, EMAIL_ID_LEN, stdin);
+				search_contact(input);
+				break;
+			case e_fourth_opt:
+				printf("\nPlease enter the serial number: ");
+				fgets(input, 32, stdin);
+				search_contact(input);
+				break;
+			}
+	} while (option != e_exit);
+	
 	/* Add the functionality for edit contacts here */
 }
 
