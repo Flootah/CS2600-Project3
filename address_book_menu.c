@@ -269,6 +269,19 @@ Status add_contacts(AddressBook *address_book)
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
 {
 	/* Add the functionality for adding contacts here */
+		switch (mode)
+		{
+			case e_add:
+				break;
+			case e_delete:
+				break;
+			case e_edit:
+				break;
+			case e_search:
+				break;
+			case e_list:
+				break;
+		}
 }
 
 void search_contact_menu(void)
@@ -301,26 +314,62 @@ Status search_contact(AddressBook *address_book)
 			case e_first_opt:	//name option
 				printf("\nPlease enter the name: ");
 				fgets(userInput, NAME_LEN, stdin);
-				//would call search() function here (do not know how to implement)
-				//then would display the matching contact (again, do not know how to implement)
+				/* Psuedo code
+				//would call search() function here (do not know how to implement
+				if (search() == e_success)
+				{
+					//then would display the matching contact (do not know how to implement)
+				}
+				else
+				{
+					printf("there are no %s in this contact.", &userInput);
+				}
+				*/
 				break;
 			case e_second_opt:	//phone number option
 				printf("\nPlease enter the phone number: ");
 				fgets(userInput, NUMBER_LEN, stdin);
-				//would call search() function here (do not know how to implement)
-				//then would display the matching contact (again, do not know how to implement)
+				/* Psuedo code
+				//would call search() function here (do not know how to implement
+				if (search() == e_success)
+				{
+					//then would display the matching contact (do not know how to implement)
+				}
+				else
+				{
+					printf("there are no %s in this contact.", &userInput);
+				}
+				*/
 				break;
 			case e_third_opt:	//email ID option
 				printf("\nPlease enter the email ID: ");
 				fgets(userInput, EMAIL_ID_LEN, stdin);
-				//would call search() function here (do not know how to implement)
-				//then would display the matching contact (again, do not know how to implement)
+				/* Psuedo code
+				//would call search() function here (do not know how to implement
+				if (search() == e_success)
+				{
+					//then would display the matching contact (do not know how to implement)
+				}
+				else
+				{
+					printf("there are no %s in this contact.", &userInput);
+				}
+				*/
 				break;
 			case e_fourth_opt:	//serial number option
 				printf("\nPlease enter the serial number: ");
 				fgets(userInput, 32, stdin);
-				//would call search() function here (do not know how to implement)
-				//then would display the matching contact (again, do not know how to implement)
+				/* Psuedo code
+				//would call search() function here (do not know how to implement
+				if (search() == e_success)
+				{
+					//then would display the matching contact (do not know how to implement)
+				}
+				else
+				{
+					printf("there are no %s in this contact.", &userInput);
+				}
+				*/
 				break;
 			case e_exit:	//back option
 				break;
