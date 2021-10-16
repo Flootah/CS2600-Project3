@@ -66,7 +66,7 @@ int ret; // boolean if file exists
     printf("The file %s has %d entries\n", DEFAULT_FILE, count);
 
 	// create address book based on count
-    address_book = malloc(sizeof(ContactInfo*) + sizeof(FILE*) + sizeof(int));
+    // address_book = malloc(sizeof(ContactInfo*) + sizeof(FILE*) + sizeof(int));
     address_book->list = malloc(count * sizeof(ContactInfo));
     address_book->fp = fp;
     address_book->count = count; 
