@@ -193,9 +193,9 @@ void add_contacts_menu(AddressBook *address_book)
 	menu_header("\nAdd Contact: ");
 
 	printf("\n0. Back");
-	printf("\n1. Name       : %s", &(address_book -> list -> name)[0][0]);
-	printf("\n2. Phone No 1 : %s", &(address_book -> list -> phone_numbers)[0][0]);
-	printf("\n3. Email ID 1 : %s", &(address_book -> list -> email_addresses)[0][0]);
+	printf("\n1. Name       : %s", &(address_book -> list -> name)[address_book -> count][0]);
+	printf("\n2. Phone No 1 : %s", &(address_book -> list -> phone_numbers)[address_book -> count][0]);    //prints the most recent entry from add contacts
+	printf("\n3. Email ID 1 : %s", &(address_book -> list -> email_addresses)[address_book -> count][0]);
 
 	printf("\n");
 	printf("Please select an option: ");
@@ -214,13 +214,14 @@ Status add_contacts(AddressBook *address_book)
 
 		switch (option)
 		{
-			case e_first_opt:
+			case e_first_opt:	//name option
 				printf("\nEnter the name: ");	
 				fgets(&(address_book -> list -> name)[0][0], NAME_LEN, stdin);
 				break;
-			case e_second_opt:
+			case e_second_opt:	//phone number option
 				printf("\nEnter phone number 1: ");
 				fgets(&(address_book -> list -> phone_numbers)[0][0], NUMBER_LEN, stdin);
+				
 				/* For loop used for alternate phone numbers if user want to input any */
 				for (int i = 2; i < PHONE_NUMBER_COUNT; i++)
 				{
@@ -237,9 +238,10 @@ Status add_contacts(AddressBook *address_book)
 					}
 				}
 				break;
-			case e_third_opt:
+			case e_third_opt:	//email option
 				printf("\nEnter email ID 1: ");
 				fgets(&(address_book -> list -> email_addresses)[0][0], EMAIL_ID_LEN, stdin);
+
 				/* For loop used for alternate email IDs if user want to input any */
 				for (int i = 2; i < EMAIL_ID_COUNT; i++)
 				{
@@ -256,6 +258,8 @@ Status add_contacts(AddressBook *address_book)
 					}
 				}				
 				break;
+			case e_exit:	//back option
+				break;
 		}
 	} while (option != e_exit);
 
@@ -267,9 +271,63 @@ Status search(const char *str, AddressBook *address_book, int loop_count, int fi
 	/* Add the functionality for adding contacts here */
 }
 
+void search_contact_menu(void)
+{
+	menu_header("Search contact by: \n");
+
+	printf("0. Back\n");
+	printf("1. Name\n");
+	printf("2. Phone No\n");
+	printf("3. Email ID\n");
+	printf("4. Serial No\n");
+
+	printf("\n");
+	printf("Please select an option: ");
+}
+
 Status search_contact(AddressBook *address_book)
 {
 	/* Add the functionality for search contacts here */
+	char userInput[NAME_LEN];	//char array for user input.  NOTE: size set at NAME_LEN = 32.  This is ok because Phone No and Email max size is the same.
+	int option;
+	do
+	{
+		search_contact_menu();
+
+		option = get_option(NUM, "");
+
+		switch (option)
+		{
+			case e_first_opt:	//name option
+				printf("\nPlease enter the name: ");
+				fgets(userInput, NAME_LEN, stdin);
+				//would call search() function here (do not know how to implement)
+				//then would display the matching contact (again, do not know how to implement)
+				break;
+			case e_second_opt:	//phone number option
+				printf("\nPlease enter the phone number: ");
+				fgets(userInput, NUMBER_LEN, stdin);
+				//would call search() function here (do not know how to implement)
+				//then would display the matching contact (again, do not know how to implement)
+				break;
+			case e_third_opt:	//email ID option
+				printf("\nPlease enter the email ID: ");
+				fgets(userInput, EMAIL_ID_LEN, stdin);
+				//would call search() function here (do not know how to implement)
+				//then would display the matching contact (again, do not know how to implement)
+				break;
+			case e_fourth_opt:	//serial number option
+				printf("\nPlease enter the serial number: ");
+				fgets(userInput, 32, stdin);
+				//would call search() function here (do not know how to implement)
+				//then would display the matching contact (again, do not know how to implement)
+				break;
+			case e_exit:	//back option
+				break;
+		}
+	} while (option != e_exit);
+
+	return e_success;
 }
 
 Status edit_contact(AddressBook *address_book)
