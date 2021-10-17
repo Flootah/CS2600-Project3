@@ -25,7 +25,7 @@ typedef int bool_t;
 
 typedef enum 
 {
-	e_add,
+	e_add=1,
 	e_search,
 	e_edit,
 	e_delete,

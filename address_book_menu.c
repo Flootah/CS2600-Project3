@@ -25,7 +25,6 @@ int get_option(int type, const char *msg)
 	 * Read a charcter
 	 */
 	printf(msg);
-	printf("\n");
 	int option;
 
 	switch (type)
@@ -44,6 +43,7 @@ int get_option(int type, const char *msg)
 		option -= '0';
 		break;
 	}
+	getc(stdin);
 	return option;
 	/* Fill the code to add above functionality */
 }
@@ -207,7 +207,10 @@ Status menu(AddressBook *address_book)
 			delete_contact(address_book);
 			break;
 		case e_list_contacts:
-			list_contacts(address_book, "Contacts:", 0, "list of all contacts", e_list);
+			for (int person = 0; person < address_book->count; person++)
+			{
+				list_contacts(address_book, "Contacts:", &person, "Press: [n] = next, Press: [p] = previous, Press: [q] | Cancel: ", e_list);
+			}
 			break;
 		case e_save:
 			save_file(address_book);
@@ -297,180 +300,52 @@ Status add_contacts(AddressBook *address_book)
 
 	return e_success;
 }
-
-Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
+int exit_search(const char *msg, Modes mode)
 {
-	Status ret; //function will assign e_no_match or e_success to this and return this.
+	int option = get_option(CHAR, msg);
 	switch (mode)
 	{
-	case e_add:
-		break;
-	case e_delete:
-		break;
-	case e_edit:
-		break;
 	case e_search:
+		return option != 'q';
+	case e_edit:
+	case e_delete:
+		return option != 'q' && option != 'c';
+	default:
+		return 0;
+	}
+}
+
+/**
+ * search	- 	performs a search on address_book. it tries to find the field 
+ * 				that matches str and prints result.
+ * 
+ * 	@param	str				string to match	
+ * 	@param	address_book	address book to search through
+ * 	@param	loop_count		unknown kappa
+ * 	@param	field			field of address book that is being matched against
+ * 	@param	msg				message to print to exit
+ * 	@param	mode			mode calling search to know which keys are valid to exit
+ */
+Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
+{
+	Status ret; //function will assign e_fail or e_success to this and return this.
+	do
+	{
+		menu_header("Search result:\n\n");
+		printf(":======:==================================:==================================:==================================:\n"
+			   ": S.No : Name                             : Phone No                         : Email                            :\n"
+			   ":======:==================================:==================================:==================================:\n");
+
 		switch (field)
 		{
 		case e_first_opt: // search by name
-			do
+
+			for (int person = 0; person < loop_count; person++)
 			{
-				menu_header("Search result:\n\n");
-				printf("%s", msg);
-				for (int person = 0; person < loop_count; person++)
-				{
-					for (int name = 0; name < NAME_COUNT; name++)
-					{
-						//checks if there is a name in name[] that matches the name that it is searching for
-						if (strstr(((address_book->list) + person)->name[name], str) != NULL)
-						{
-							ret = e_success; //if match is found, return e_success.
-							// print main information
-							printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + person)->si_no, ((address_book->list) + person)->name[0], ((address_book->list) + person)->phone_numbers[0], ((address_book->list) + person)->email_addresses[0]);
-							// print additional information
-							for (int person_name = 1; person_name < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); person_name++)
-							{
-								char name_buffer[NAME_LEN];
-								if (person_name < NAME_COUNT && (((address_book->list) + person)->name[person_name]) != NULL)
-									strcpy(name_buffer, ((address_book->list) + person)->name[person_name]);
-								else
-									strcpy(name_buffer, " ");
-
-								char phone_buffer[NUMBER_LEN];
-								if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->phone_numbers[person_name]) != NULL)
-									strcpy(phone_buffer, ((address_book->list) + person)->phone_numbers[person_name]);
-								else
-									strcpy(phone_buffer, " ");
-
-								char email_buffer[EMAIL_ID_LEN];
-								if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->email_addresses[person_name]) != NULL)
-									strcpy(email_buffer, ((address_book->list) + person)->email_addresses[person_name]);
-								else
-									strcpy(email_buffer, " ");
-								printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
-								printf("\n");
-							}
-							break;
-						}
-						else
-						{
-							ret = e_no_match; //if no match if found, return e_fail.
-							break;
-						}
-					}
-				}
-				printf(":======:==================================:==================================:==================================:\n");
-			} while (get_option(CHAR, "Press: [q] | Cancel: ") != 'q');
-			break;
-		case e_second_opt: // search by phone number
-			do
-			{
-				menu_header("Search result:\n\n");
-				printf("%s", msg);
-				for (int person = 0; person < loop_count; person++)
-				{
-					for (int phone_number = 0; phone_number < PHONE_NUMBER_COUNT; phone_number++)
-					{
-						//checks if there is a name in name[] that matches the name that it is searching for
-						if (strstr(((address_book->list) + person)->phone_numbers[phone_number], str) != NULL)
-						{
-							ret = e_success; //if match is found, return e_success.
-							// print main information
-							printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + person)->si_no, ((address_book->list) + person)->name[0], ((address_book->list) + person)->phone_numbers[0], ((address_book->list) + person)->email_addresses[0]);
-							// print additional information
-							for (int person_name = 1; person_name < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); person_name++)
-							{
-								char name_buffer[NAME_LEN];
-								if (person_name < NAME_COUNT && (((address_book->list) + person)->name[person_name]) != NULL)
-									strcpy(name_buffer, ((address_book->list) + person)->name[person_name]);
-								else
-									strcpy(name_buffer, " ");
-
-								char phone_buffer[NUMBER_LEN];
-								if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->phone_numbers[person_name]) != NULL)
-									strcpy(phone_buffer, ((address_book->list) + person)->phone_numbers[person_name]);
-								else
-									strcpy(phone_buffer, " ");
-
-								char email_buffer[EMAIL_ID_LEN];
-								if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->email_addresses[person_name]) != NULL)
-									strcpy(email_buffer, ((address_book->list) + person)->email_addresses[person_name]);
-								else
-									strcpy(email_buffer, " ");
-								printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
-								printf("\n");
-							}
-							break;
-						}
-						else
-						{
-							ret = e_no_match; //if no match if found, return e_fail.
-							break;
-						}
-					}
-				}
-				printf(":======:==================================:==================================:==================================:\n");
-			} while (get_option(CHAR, "Press: [q] | Cancel: ") != 'q');
-			break;
-		case e_third_opt: // search by email
-			do
-			{
-				menu_header("Search result:\n\n");
-				printf("%s", msg);
-				for (int person = 0; person < loop_count; person++)
-				{
-					for (int email_id = 0; email_id < EMAIL_ID_COUNT; email_id++)
-					{
-						//checks if there is a name in name[] that matches the name that it is searching for
-						if (strstr(((address_book->list) + person)->email_addresses[email_id], str) != NULL)
-						{
-							ret = e_success; //if match is found, return e_success.
-							// print main information
-							printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + person)->si_no, ((address_book->list) + person)->name[0], ((address_book->list) + person)->phone_numbers[0], ((address_book->list) + person)->email_addresses[0]);
-							// print additional information
-							for (int person_name = 1; person_name < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); person_name++)
-							{
-								char name_buffer[NAME_LEN];
-								if (person_name < NAME_COUNT && (((address_book->list) + person)->name[person_name]) != NULL)
-									strcpy(name_buffer, ((address_book->list) + person)->name[person_name]);
-								else
-									strcpy(name_buffer, " ");
-
-								char phone_buffer[NUMBER_LEN];
-								if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->phone_numbers[person_name]) != NULL)
-									strcpy(phone_buffer, ((address_book->list) + person)->phone_numbers[person_name]);
-								else
-									strcpy(phone_buffer, " ");
-
-								char email_buffer[EMAIL_ID_LEN];
-								if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->email_addresses[person_name]) != NULL)
-									strcpy(email_buffer, ((address_book->list) + person)->email_addresses[person_name]);
-								else
-									strcpy(email_buffer, " ");
-								printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
-								printf("\n");
-							}
-							break;
-						}
-						else
-						{
-							ret = e_no_match; //if no match if found, return e_fail.
-							break;
-						}
-					}
-				}
-				printf(":======:==================================:==================================:==================================:\n");
-			} while (get_option(CHAR, "Press: [q] | Cancel: ") != 'q');
-			break;
-		case e_fourth_opt: // search si_no
-			do
-			{
-				menu_header("Search result:\n\n");
-				printf("%s", msg);
-				for (int person = 0; person < loop_count; person++)
+				for (int name = 0; name < NAME_COUNT; name++)
 				{
 					//checks if there is a name in name[] that matches the name that it is searching for
-					if (((address_book->list) + person)->si_no == atoi(str))
+					if (strstr(((address_book->list) + person)->name[name], str) != NULL)
 					{
 						ret = e_success; //if match is found, return e_success.
 						// print main information
@@ -506,22 +381,163 @@ Status search(const char *str, AddressBook *address_book, int loop_count, int fi
 						break;
 					}
 				}
-				printf(":======:==================================:==================================:==================================:\n");
-			} while (get_option(CHAR, "Press: [q] | Cancel: ") != 'q');
+			}
+			break;
+		case e_second_opt: // search by phone number
+
+			for (int person = 0; person < loop_count; person++)
+			{
+				for (int phone_number = 0; phone_number < PHONE_NUMBER_COUNT; phone_number++)
+				{
+					//checks if there is a name in name[] that matches the name that it is searching for
+					if (strstr(((address_book->list) + person)->phone_numbers[phone_number], str) != NULL)
+					{
+						ret = e_success; //if match is found, return e_success.
+						// print main information
+						printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + person)->si_no, ((address_book->list) + person)->name[0], ((address_book->list) + person)->phone_numbers[0], ((address_book->list) + person)->email_addresses[0]);
+						// print additional information
+						for (int person_name = 1; person_name < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); person_name++)
+						{
+							char name_buffer[NAME_LEN];
+							if (person_name < NAME_COUNT && (((address_book->list) + person)->name[person_name]) != NULL)
+								strcpy(name_buffer, ((address_book->list) + person)->name[person_name]);
+							else
+								strcpy(name_buffer, " ");
+
+							char phone_buffer[NUMBER_LEN];
+							if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->phone_numbers[person_name]) != NULL)
+								strcpy(phone_buffer, ((address_book->list) + person)->phone_numbers[person_name]);
+							else
+								strcpy(phone_buffer, " ");
+
+							char email_buffer[EMAIL_ID_LEN];
+							if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->email_addresses[person_name]) != NULL)
+								strcpy(email_buffer, ((address_book->list) + person)->email_addresses[person_name]);
+							else
+								strcpy(email_buffer, " ");
+							printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
+							printf("\n");
+						}
+						break;
+					}
+					else
+					{
+						ret = e_no_match; //if no match if found, return e_fail.
+						break;
+					}
+				}
+			}
+			break;
+		case e_third_opt: // search by email
+
+			for (int person = 0; person < loop_count; person++)
+			{
+				for (int email_id = 0; email_id < EMAIL_ID_COUNT; email_id++)
+				{
+					//checks if there is a name in name[] that matches the name that it is searching for
+					if (strstr(((address_book->list) + person)->email_addresses[email_id], str) != NULL)
+					{
+						ret = e_success; //if match is found, return e_success.
+						// print main information
+						printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + person)->si_no, ((address_book->list) + person)->name[0], ((address_book->list) + person)->phone_numbers[0], ((address_book->list) + person)->email_addresses[0]);
+						// print additional information
+						for (int person_name = 1; person_name < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); person_name++)
+						{
+							char name_buffer[NAME_LEN];
+							if (person_name < NAME_COUNT && (((address_book->list) + person)->name[person_name]) != NULL)
+								strcpy(name_buffer, ((address_book->list) + person)->name[person_name]);
+							else
+								strcpy(name_buffer, " ");
+
+							char phone_buffer[NUMBER_LEN];
+							if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->phone_numbers[person_name]) != NULL)
+								strcpy(phone_buffer, ((address_book->list) + person)->phone_numbers[person_name]);
+							else
+								strcpy(phone_buffer, " ");
+
+							char email_buffer[EMAIL_ID_LEN];
+							if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->email_addresses[person_name]) != NULL)
+								strcpy(email_buffer, ((address_book->list) + person)->email_addresses[person_name]);
+							else
+								strcpy(email_buffer, " ");
+							printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
+							printf("\n");
+						}
+						break;
+					}
+					else
+					{
+						ret = e_no_match; //if no match if found, return e_fail.
+						break;
+					}
+				}
+			}
+
+			break;
+		case e_fourth_opt: // search si_no
+		
+			for (int person = 0; person < loop_count; person++)
+			{
+				//checks if there is a name in name[] that matches the name that it is searching for
+				if (((address_book->list) + person)->si_no == atoi(str))
+				{
+					ret = e_success; //if match is found, return e_success.
+					// print main information
+					printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + person)->si_no, ((address_book->list) + person)->name[0], ((address_book->list) + person)->phone_numbers[0], ((address_book->list) + person)->email_addresses[0]);
+					// print additional information
+					for (int person_name = 1; person_name < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); person_name++)
+					{
+						char name_buffer[NAME_LEN];
+						if (person_name < NAME_COUNT && (((address_book->list) + person)->name[person_name]) != NULL)
+							strcpy(name_buffer, ((address_book->list) + person)->name[person_name]);
+						else
+							strcpy(name_buffer, " ");
+
+						char phone_buffer[NUMBER_LEN];
+						if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->phone_numbers[person_name]) != NULL)
+							strcpy(phone_buffer, ((address_book->list) + person)->phone_numbers[person_name]);
+						else
+							strcpy(phone_buffer, " ");
+
+						char email_buffer[EMAIL_ID_LEN];
+						if (person_name < PHONE_NUMBER_COUNT && (((address_book->list) + person)->email_addresses[person_name]) != NULL)
+							strcpy(email_buffer, ((address_book->list) + person)->email_addresses[person_name]);
+						else
+							strcpy(email_buffer, " ");
+						printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
+						printf("\n");
+					}
+					break;
+				}
+			}
+			ret = e_no_match; //if no match if found, return e_fail.
 			break;
 		default:
 			break;
 		}
-		break;
-	case e_list:
-		break;
-	}
+		printf(":======:==================================:==================================:==================================:\n");
+	} while (exit_search(msg, mode));
 	return ret;
 }
 
-void search_contact_menu(void)
+void search_contact_menu(Modes mode)
 {
-	menu_header("Search contact by: \n");
+	char buff[40];
+	switch (mode)
+	{
+	case e_search:
+		strcpy(buff, "Search contact by:");
+		break;
+	case e_edit:
+		strcpy(buff, "Search contact to Edit by:");
+		break;
+	case e_delete:
+		strcpy(buff, "Search contact to Delete by:");
+		break;
+	default:
+		break;
+	}
+	menu_header(buff);
 
 	printf("0. Back\n");
 	printf("1. Name\n");
@@ -536,103 +552,53 @@ void search_contact_menu(void)
 Status search_contact(AddressBook *address_book)
 {
 	int string_len;
-	char userInput[NAME_LEN]; //char array for user input.  NOTE: size set at NAME_LEN = 32.  This is ok because Phone No and Email max size is the same.
+	char userInput[max(max(NAME_LEN,EMAIL_ID_LEN),NUMBER_LEN)]; //char array for user input.  NOTE: size set at NAME_LEN = 32.  This is ok because Phone No and Email max size is the same.
 	MenuOptions option;
 	do
 	{
-		search_contact_menu();
-
+		search_contact_menu(e_search);
 		option = get_option(NUM, "");
 
-		char *msg = ":======:==================================:==================================:==================================:\n"
-					": S.No : Name                             : Phone No                         : Email                            :\n"
-					":======:==================================:==================================:==================================:\n";
+		char *msg = "Press: [q] | Cancel: ";
 		switch (option)
 		{
 		case e_first_opt: //name option
-			printf("\nPlease enter the name: \n");
-			fgets(userInput, NAME_LEN, stdin); // clear stdin
+			printf("Enter the Name: ");
 			fgets(userInput, NAME_LEN, stdin); // actually write to buffer
 			string_len = strlen(userInput) - 1;
 			if (userInput[string_len] == '\n') //sets the \n at the end of userInput th a NULL byte
 				userInput[string_len] = '\0';
-			if (search(userInput, address_book, address_book->count, 1, msg, e_search) == e_success)
-			{
-				search(userInput, address_book, address_book->count, 1, msg, e_search); //prints out menu if search was successful
-			}
-			else
-			{
-				printf("there are no %s in this contact.", &userInput);
-			}
 			break;
 		case e_second_opt: //phone number option
-			printf("\nPlease enter the phone number: ");
-			fgets(userInput, NUMBER_LEN, stdin); // clear stdin
+			printf("Enter the Phone Number: ");
 			fgets(userInput, NUMBER_LEN, stdin); // actually write to buffer
 			string_len = strlen(userInput) - 1;
 			if (userInput[string_len] == '\n') //sets the \n at the end of userInput to a NULL byte
 				userInput[string_len] = '\0';
-			if (search(userInput, address_book, address_book->count, 2, msg, e_search) == e_success)
-			{
-				search(userInput, address_book, address_book->count, 2, msg, e_search); //prints out menu if search was successful
-			}
-			else
-			{
-				printf("there are no %s in this contact.", &userInput);
-			}
 			break;
 		case e_third_opt: //email ID option
-			printf("\nPlease enter the email ID: ");
-			fgets(userInput, EMAIL_ID_LEN, stdin); // clear stdin
+			printf("Enter the Email ID: ");
 			fgets(userInput, EMAIL_ID_LEN, stdin); // actually write to buffer
 			string_len = strlen(userInput) - 1;
 			if (userInput[string_len] == '\n') //sets the \n at the end of userInput to a NULL byte
 				userInput[string_len] = '\0';
-			if (search(userInput, address_book, address_book->count, 3, msg, e_search) == e_success)
-			{
-				search(userInput, address_book, address_book->count, 3, msg, e_search); //prints out menu if search was successful
-			}
-			else
-			{
-				printf("there are no %s in this contact.", &userInput);
-			}
 			break;
 		case e_fourth_opt: //serial number option
-			printf("\nPlease enter the serial number: ");
-			fgets(userInput, 32, stdin); // clear stdin
+			printf("Enter the Serial Number: ");
 			fgets(userInput, 32, stdin); // actually write to buffer
 			string_len = strlen(userInput) - 1;
 			if (userInput[string_len] == '\n') //sets the \n at the end of userInput to a NULL byte
 				userInput[string_len] = '\0';
-			if (search(userInput, address_book, address_book->count, 4, msg, e_search) == e_success)
-			{
-				search(userInput, address_book, address_book->count, 4, msg, e_search); //prints out menu if shearch was successful
-			}
-			else
-			{
-				printf("there are no %s in this contact.", &userInput);
-			}
 			break;
 		case e_no_opt: //back option
 			break;
 		default:
 			break;
 		}
+		search(userInput, address_book, address_book->count, option, msg, e_search);
 	} while (option != e_exit);
 
 	return e_success;
-}
-
-void edit_contacts_search_menu(AddressBook *address_book)
-{
-	menu_header("\nSearch Contact to Edit by: ");
-	printf("\n0. Back");
-	printf("\n1. Name");
-	printf("\n2. Phone No");
-	printf("\n3. Email ID");
-	printf("\n4. Serial No");
-	printf("\n");
-	printf("Please select an option: ");
 }
 
 void edit_contacts_menu(AddressBook *address_book)
@@ -653,7 +619,7 @@ Status edit_contact(AddressBook *address_book)
 	int option;
 	do
 	{
-		edit_contacts_search_menu(address_book);
+		search_contact_menu(e_edit);
 		option = get_option(NUM, "");
 
 		switch (option)
