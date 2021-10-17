@@ -189,7 +189,5 @@ Status save_file(AddressBook *address_book)
 	}
 
 	fclose(address_book->fp);
-	free(address_book->list);
-	free(address_book);
 	return e_success;
 }
