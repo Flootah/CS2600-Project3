@@ -71,54 +71,10 @@ Status save_prompt(AddressBook *address_book)
 
 	return e_success;
 }
-//Not sure if this will work, feel free to rework if necessary
+
 Status list_contacts(AddressBook *address_book, const char *title, int *index, const char *msg, Modes mode)
 {
-	/* 
-	 * Add code to list all the contacts availabe in address_book.csv file
-	 * Should be menu based
-	 * The menu provide navigation option if the entries increase the page size
-	 */
-	/*
-	char option;
-	int amtOfLists = 0;
-
-	do{
-		// Intended to print out 3 at a time and to stop if it is more than array
-		menu_header("List of Contacts:\n");
-		for (int i = 0 + amtOfLists * 3; i < 3 + amtOfLists*3 && i < address_book->count; i++){
-			printf("Name: %s\n", address_book->list->name[i]);
-			printf("Phone Number: %s\n", address_book->list->email_addresses[i]);
-			printf("Email ID: %s\n", address_book->list->email_addresses[i]);
-			printf("Serial No:%s\n", address_book->count);
-		}
-		option = get_option(CHAR, "Enter Q to move backwards, W to move forward, and N to exit.\n");
-		switch (option){
-			case 'N':
-			//Intended to break.
-			break;
-			case 'Q':
-			// Intended to prevent going under 0
-			if (amtOfLists /= 3 <= 0)
-			{
-				amtOfLists == 0;
-			}
-			else{
-				amtOfLists -= 3;
-			}
-			case 'W':
-			//Intended to prevent going above count
-			if (amtOfLists + address_book->count > 3)
-			{
-				amtOfLists = address_book->count/3;
-			}
-			else{
-				amtOfLists =+ 3;
-			}
-		}
-	}
-	while(option!= 'N');
-*/
+	//search("", address_book, address_book->count, 1, msg, e_search);
 
 	return e_success;
 }
@@ -380,7 +336,9 @@ Status search_contact(AddressBook *address_book)
 			size_t string_len = strlen(userInput) - 1;
 			if (userInput[string_len] == '\n')
 				userInput[string_len] = '\0';
-			char *msg = ":======:==================================:==================================:==================================:\n: S.No : Name                             : Phone No                         : Email                            :\n:======:==================================:==================================:==================================:\n";
+			char *msg = ":======:==================================:==================================:==================================:\n"
+						": S.No : Name                             : Phone No                         : Email                            :\n"
+						":======:==================================:==================================:==================================:\n";
 			if (search(userInput, address_book, address_book->count, 1, msg, e_search) == e_success)
 			{
 			}
