@@ -74,8 +74,72 @@ Status save_prompt(AddressBook *address_book)
 
 Status list_contacts(AddressBook *address_book, const char *title, int *index, const char *msg, Modes mode)
 {
-	//search("", address_book, address_book->count, 1, msg, e_search);
+	//NOTE: did not use any of the parameters except *address_book
+	int counter = 0;
+	char option;
+	system("cls");
+	do
+	{
+		//prints out the entry at index count
+		//printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + counter)->si_no, ((address_book->list) + counter)->name[0], ((address_book->list) + counter)->phone_numbers[0], ((address_book->list) + counter)->email_addresses[0]);
+		// char name_buffer[NAME_LEN];
+		// strcpy(name_buffer, address_book->list->name[counter]);
 
+		// char phone_buffer[NUMBER_LEN];
+		// strcpy(phone_buffer, address_book->list->phone_numbers[counter]);
+
+		// char email_buffer[EMAIL_ID_LEN];
+		// strcpy(email_buffer, address_book->list->email_addresses[counter]);
+
+		// printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
+		// printf("\n");
+
+		char *header = ":======:==================================:==================================:==================================:\n"
+					   ": S.No : Name                             : Phone No                         : Email                            :\n"
+					   ":======:==================================:==================================:==================================:\n";
+		printf("%s", header);
+		for (int person_name = 1; person_name < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); person_name++)
+		{
+			char name_buffer[NAME_LEN];
+			if (person_name < NAME_COUNT && (address_book->list->name[person_name]) != NULL)
+				strcpy(name_buffer, address_book->list->name[person_name]);
+			else
+				strcpy(name_buffer, " ");
+
+			char phone_buffer[NUMBER_LEN];
+			if (person_name < PHONE_NUMBER_COUNT && (address_book->list->phone_numbers[person_name]) != NULL)
+				strcpy(phone_buffer, address_book->list->phone_numbers[person_name]);
+			else
+				strcpy(phone_buffer, " ");
+
+			char email_buffer[EMAIL_ID_LEN];
+			if (person_name < PHONE_NUMBER_COUNT && (address_book->list->email_addresses[person_name]) != NULL)
+				strcpy(email_buffer, address_book->list->email_addresses[person_name]);
+			else
+				strcpy(email_buffer, " ");
+			printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
+			printf("\n");
+		}
+		printf(":======:==================================:==================================:==================================:\n");
+
+		//printf("Press: [q] | Cancel, [n] | next page, [p] | prev. page: "); //asks the user if they want to go to next page, prev page, or exit.
+		option = get_option(CHAR, "Press: [q] | Cancel, [n] | next page, [p] | prev. page: ");
+		if (option == 'n')
+		{
+			if (counter > (address_book->count)) //checks to see if the user is already at the last page.
+				printf("There is no next page.");
+			else
+				counter++;
+		}
+		else if (option == 'p')
+		{
+			if (counter == 0) //checks to see if the user is already at the first page.
+				printf("There is no previous page.\n");
+			else
+				counter--;
+		}
+		//system("cls");
+	} while (option != 'q');
 	return e_success;
 }
 
