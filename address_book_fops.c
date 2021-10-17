@@ -32,7 +32,7 @@ char *strtok_new(char *line)
 	else // EOF
 	{
 		riturn = source;
-		source = ++p;	
+		source = ++p;
 	}
 	return riturn;
 }
@@ -100,6 +100,8 @@ Status load_file(AddressBook *address_book)
 		// create address book based on count
 		// address_book = malloc(sizeof(ContactInfo*) + sizeof(FILE*) + sizeof(int));
 		address_book->list = malloc(count * sizeof(ContactInfo));
+		if(address_book->list == NULL)
+			return e_fail;
 		address_book->fp = fp;
 		address_book->count = count;
 
@@ -154,10 +156,6 @@ Status load_file(AddressBook *address_book)
 
 Status save_file(AddressBook *address_book)
 {
-	/*
-	 * Write contacts back to file.
-	 * Re write the complete file currently
-	 */
 	address_book->fp = fopen(DEFAULT_FILE, "w");
 
 	if (address_book->fp == NULL)
@@ -165,22 +163,29 @@ Status save_file(AddressBook *address_book)
 		return e_fail;
 	}
 
-	/* 
-	 * Add the logic to save the file
-	 * Make sure to do error handling
-	 */
-	char *header = "name,phone_number1,phone_number2,phone_number3,phone_number4,phone_number5,email1,email2,email3,email4,email5,si_no";
+	char *header = "name,phone_number1,phone_number2,phone_number3,phone_number4,phone_number5,email1,email2,email3,email4,email5,si_no\n";
 	fprintf(address_book->fp, "%s", header);
 	for (int person = 0; person < address_book->count; person++)
 	{
-		char line[1024];
+		char line[1024] = "";
 		for (int name = 0; name < NAME_COUNT; name++)
-			strcat(line, ((address_book->list) + person)->name[name]);
+		{
+			strcat(line, ((address_book->list) + person)->name[name]); 
+			strcat(line, ",");
+		}
 		for (int phone = 0; phone < PHONE_NUMBER_COUNT; phone++)
-			strcat(line, ((address_book->list) + person)->phone_numbers[phone]);
+		{
+			strcat(line, ((address_book->list) + person)->phone_numbers[phone]); 
+			strcat(line, ",");
+		}
 		for (int email = 0; email < EMAIL_ID_COUNT; email++)
-			strcat(line, ((address_book->list) + person)->email_addresses[email]);
-		fprintf(address_book->fp, "%s,%d", line, address_book->list->si_no);
+		{
+			strcat(line, ((address_book->list) + person)->email_addresses[email]); 
+			strcat(line, ",");
+		}
+		fprintf(address_book->fp, "%s%d", line, ((address_book->list) + person)->si_no);
+		if (person < address_book->count - 1) // don't add new line at end of file for last entry
+			fprintf(address_book->fp, "\n");
 	}
 
 	fclose(address_book->fp);
