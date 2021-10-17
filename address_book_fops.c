@@ -46,6 +46,7 @@ const char *getfield(char *buff, char *line, int field_num)
 	while (tok)
 	{
 		if (field_num == 1)
+		{
 			if (*tok)
 			{
 				strcpy(buff, strcat(tok, "\0"));
@@ -55,6 +56,7 @@ const char *getfield(char *buff, char *line, int field_num)
 			{
 				return "";
 			}
+		}
 		printf(""); // reset buffer
 		tok = strtok_new(NULL);
 		field_num--;
@@ -100,7 +102,7 @@ Status load_file(AddressBook *address_book)
 		// create address book based on count
 		// address_book = malloc(sizeof(ContactInfo*) + sizeof(FILE*) + sizeof(int));
 		address_book->list = malloc(count * sizeof(ContactInfo));
-		if(address_book->list == NULL)
+		if (address_book->list == NULL)
 			return e_fail;
 		address_book->fp = fp;
 		address_book->count = count;
@@ -170,17 +172,17 @@ Status save_file(AddressBook *address_book)
 		char line[1024] = "";
 		for (int name = 0; name < NAME_COUNT; name++)
 		{
-			strcat(line, ((address_book->list) + person)->name[name]); 
+			strcat(line, ((address_book->list) + person)->name[name]);
 			strcat(line, ",");
 		}
 		for (int phone = 0; phone < PHONE_NUMBER_COUNT; phone++)
 		{
-			strcat(line, ((address_book->list) + person)->phone_numbers[phone]); 
+			strcat(line, ((address_book->list) + person)->phone_numbers[phone]);
 			strcat(line, ",");
 		}
 		for (int email = 0; email < EMAIL_ID_COUNT; email++)
 		{
-			strcat(line, ((address_book->list) + person)->email_addresses[email]); 
+			strcat(line, ((address_book->list) + person)->email_addresses[email]);
 			strcat(line, ",");
 		}
 		fprintf(address_book->fp, "%s%d", line, ((address_book->list) + person)->si_no);
