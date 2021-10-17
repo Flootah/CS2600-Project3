@@ -29,12 +29,17 @@ char *strtok_new(char *line)
 		riturn = source;
 		source = ++p;
 	}
+	else // EOF
+	{
+		riturn = source;
+		source = ++p;	
+	}
 	return riturn;
 }
 /**
  * getfield	- returns the fieldNumth field from line, based on the FIELD_DELIMITER
  */
-const char *getfield(char *line, int field_num)
+const char *getfield(char *buff, char *line, int field_num)
 {
 	char *tok = strtok_new(line);
 	field_num++;
@@ -43,13 +48,14 @@ const char *getfield(char *line, int field_num)
 		if (field_num == 1)
 			if (*tok)
 			{
-				return tok;
+				strcpy(buff, strcat(tok, "\0"));
+				return buff; // add the null byte to the end of string
 			}
 			else
 			{
 				return "";
 			}
-		printf("");	// reset buffer
+		printf(""); // reset buffer
 		tok = strtok_new(NULL);
 		field_num--;
 	}
@@ -109,24 +115,27 @@ Status load_file(AddressBook *address_book)
 			for (int name = 0; name < NAME_COUNT; name++)
 			{
 				tmp = strdup(line);
-				strcpy(((address_book->list) + index)->name[name], getfield(tmp, name));
+				char buff[NAME_LEN];
+				strcpy(((address_book->list) + index)->name[name], getfield(buff, tmp, name));
 				free(tmp);
 			}
 			for (int phone = 0; phone < PHONE_NUMBER_COUNT; phone++)
 			{
 				tmp = strdup(line);
-				strcpy(((address_book->list) + index)->phone_numbers[phone], getfield(tmp, phone + NAME_COUNT));
+				char buff[NUMBER_LEN];
+				strcpy(((address_book->list) + index)->phone_numbers[phone], getfield(buff, tmp, phone + NAME_COUNT));
 				free(tmp);
 			}
 			for (int email = 0; email < EMAIL_ID_COUNT; email++)
 			{
 				tmp = strdup(line);
-				strcpy(((address_book->list) + index)->email_addresses[email], getfield(tmp, email + NAME_COUNT + PHONE_NUMBER_COUNT));
+				char buff[EMAIL_ID_LEN];
+				strcpy(((address_book->list) + index)->email_addresses[email], getfield(buff, tmp, email + NAME_COUNT + PHONE_NUMBER_COUNT));
 				free(tmp);
 			}
 			tmp = strdup(line);
-			((address_book->list) + index)->si_no = atoi(getfield(tmp, NAME_COUNT + PHONE_NUMBER_COUNT + EMAIL_ID_COUNT));
-			printf("the num: %d\n", ((address_book->list) + index)->si_no);
+			char buff[32];
+			((address_book->list) + index)->si_no = atoi(getfield(buff, tmp, NAME_COUNT + PHONE_NUMBER_COUNT + EMAIL_ID_COUNT));
 			free(tmp);
 			index++;
 		}
