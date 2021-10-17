@@ -24,7 +24,6 @@ int main(void)
 		{
 			/* Save the entries */
 			save_prompt(address_book);
-			free(address_book->list);
 			free(address_book);
 		}
 	}
