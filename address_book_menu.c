@@ -282,7 +282,7 @@ void view_contact_menu(ContactInfo *person, Modes mode)
 		break;
 	}
 }
-Status edit_person(ContactInfo *person, MenuOptions option)
+Status edit_person(ContactInfo *person, MenuOptions option, Modes mode)
 {
 	int index;
 	int string_len;
@@ -291,45 +291,84 @@ Status edit_person(ContactInfo *person, MenuOptions option)
 	{
 	case e_first_opt:
 		userInput = malloc(sizeof(char) * NAME_LEN);
-		printf("Enter Name index to be changed [Max %d]: ", NAME_COUNT);
-		fgets(userInput, NAME_LEN, stdin);
-		index = atoi(userInput);
-		if (index < 1 || index > NAME_COUNT)
-			break;
-		printf("Enter Name %d: [Just enter removes the entry]: ", index);
+		if (mode == e_edit)
+		{
+			printf("Enter Name index to be changed [Max %d]: ", NAME_COUNT);
+			fgets(userInput, NAME_LEN, stdin);
+			index = atoi(userInput);
+			if (index < 1 || index > NAME_COUNT)
+				break;
+			printf("Enter Name %d: [Just enter removes the entry]: ", index);
+		}
+		else if (mode == e_add)
+		{
+			for (index = 1; index < NAME_COUNT; index++)
+			{
+				if (strcmp(person->name[index - 1], ""))
+					break;
+			}
+			printf("Enter the Name: ");
+		}
 		fgets(userInput, NAME_LEN, stdin);
 		string_len = strlen(userInput) - 1;
 		if (userInput[string_len] == '\n')
 			userInput[string_len] = '\0';
 		strcpy(person->name[index - 1], userInput);
+		free(userInput);
 		break;
 	case e_second_opt:
 		userInput = malloc(sizeof(char) * NAME_LEN);
-		printf("Enter Phone Number index to be changed [Max %d]: ", PHONE_NUMBER_COUNT);
-		fgets(userInput, NUMBER_LEN, stdin);
-		index = atoi(userInput);
-		if (index < 1 || index > PHONE_NUMBER_COUNT)
-			break;
-		printf("Enter Phone Number %d: [Just enter removes the entry]: ", index);
+		if (mode == e_edit)
+		{
+			printf("Enter Phone Number index to be changed [Max %d]: ", PHONE_NUMBER_COUNT);
+			fgets(userInput, NUMBER_LEN, stdin);
+			index = atoi(userInput);
+			if (index < 1 || index > PHONE_NUMBER_COUNT)
+				break;
+			printf("Enter Phone Number %d: [Just enter removes the entry]: ", index);
+		}
+		else if (mode == e_add)
+		{
+			for (index = 1; index < PHONE_NUMBER_COUNT; index++)
+			{
+				if (!strcmp(person->phone_numbers[index - 1], ""))
+					break;
+			}
+			printf("Enter Phone Number %d: [Please renter the same option of alternate Phone Number]: ", index);
+		}
 		fgets(userInput, NUMBER_LEN, stdin);
 		string_len = strlen(userInput) - 1;
 		if (userInput[string_len] == '\n')
 			userInput[string_len] = '\0';
 		strcpy(person->phone_numbers[index - 1], userInput);
+		free(userInput);
 		break;
 	case e_third_opt:
 		userInput = malloc(sizeof(char) * NAME_LEN);
-		printf("Enter Email ID index to be changed [Max %d]: ", EMAIL_ID_COUNT);
-		fgets(userInput, EMAIL_ID_LEN, stdin);
-		index = atoi(userInput);
-		if (index < 1 || index > EMAIL_ID_COUNT)
-			break;
-		printf("Enter Email ID %d: [Just enter removes the entry]: ", index);
+		if (mode == e_edit)
+		{
+			printf("Enter Email ID index to be changed [Max %d]: ", EMAIL_ID_COUNT);
+			fgets(userInput, EMAIL_ID_LEN, stdin);
+			index = atoi(userInput);
+			if (index < 1 || index > EMAIL_ID_COUNT)
+				break;
+			printf("Enter Email ID %d: [Just enter removes the entry]: ", index);
+		}
+		else if (mode == e_add)
+		{
+			for (index = 1; index < EMAIL_ID_COUNT; index++)
+			{
+				if (!strcmp(person->email_addresses[index - 1], ""))
+					break;
+			}
+			printf("Enter Email ID %d: [Please renter the same option of alternate Email ID]: ", index);
+		}
 		fgets(userInput, EMAIL_ID_LEN, stdin);
 		string_len = strlen(userInput) - 1;
 		if (userInput[string_len] == '\n')
 			userInput[string_len] = '\0';
 		strcpy(person->email_addresses[index - 1], userInput);
+		free(userInput);
 		break;
 
 	default:
@@ -375,7 +414,7 @@ Status add_contacts(AddressBook *address_book)
 		case e_first_opt:
 		case e_second_opt:
 		case e_third_opt:
-			edit_person(person, option);
+			edit_person(person, option, e_add);
 			break;
 		default:
 			break;
@@ -786,7 +825,7 @@ Status edit_contact(AddressBook *address_book)
 			case e_first_opt:
 			case e_second_opt:
 			case e_third_opt:
-				edit_person(person, option);
+				edit_person(person, option, e_edit);
 				break;
 			default:
 				break;
