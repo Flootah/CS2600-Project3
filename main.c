@@ -13,7 +13,7 @@ int main(void)
 	Status ret;
 
 	/* Load the file from .csv file if any */
-	address_book = malloc(sizeof(int) + sizeof(FILE*) + sizeof(ContactInfo*));
+	address_book = malloc(sizeof(int) + sizeof(FILE *) + sizeof(ContactInfo *));
 	ret = load_file(address_book);
 	if (ret == e_success)
 	{
@@ -24,6 +24,8 @@ int main(void)
 		{
 			/* Save the entries */
 			save_prompt(address_book);
+			free(address_book->list);
+			free(address_book);
 		}
 	}
 
