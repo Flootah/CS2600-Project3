@@ -93,37 +93,54 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 {
 	int option;
 	Status ret = e_success;
+	int indexes[WINDOW_SIZE];
+	int page = 0;
 	do
 	{
+		for (int person = 0; person < WINDOW_SIZE; person++)
+		{
+			indexes[person] = index[page * WINDOW_SIZE + person];
+			if (page * WINDOW_SIZE + person == address_book->count - 1)
+			{
+				if (page * WINDOW_SIZE + person == address_book->count - 1)
+				{
+					for (int remainder = person + 1; remainder < WINDOW_SIZE; remainder++)
+					{
+						indexes[remainder] = -1; // non-existent index
+					}
+					break;
+				}
+			}
+		}
 		menu_header("Search result:\n\n");
 		printf(title);
 
 		for (int person = 0; person < WINDOW_SIZE; person++)
 		{
-			if (index[person] == -1)
+			if (indexes[person] == -1)
 			{
 				break;
 			}
 			// print main information
-			printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + index[person])->si_no, ((address_book->list) + index[person])->name[0], ((address_book->list) + index[person])->phone_numbers[0], ((address_book->list) + index[person])->email_addresses[0]);
+			printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + indexes[person])->si_no, ((address_book->list) + indexes[person])->name[0], ((address_book->list) + indexes[person])->phone_numbers[0], ((address_book->list) + indexes[person])->email_addresses[0]);
 			// print additional information
 			for (int row = 1; row < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); row++)
 			{
 				char name_buffer[NAME_LEN];
-				if (row < NAME_COUNT && (((address_book->list) + index[person])->name[row]) != NULL)
-					strcpy(name_buffer, ((address_book->list) + index[person])->name[row]);
+				if (row < NAME_COUNT && (((address_book->list) + indexes[person])->name[row]) != NULL)
+					strcpy(name_buffer, ((address_book->list) + indexes[person])->name[row]);
 				else
 					strcpy(name_buffer, " ");
 
 				char phone_buffer[NUMBER_LEN];
-				if (row < PHONE_NUMBER_COUNT && (((address_book->list) + *(index + person))->phone_numbers[row]) != NULL)
-					strcpy(phone_buffer, ((address_book->list) + *(index + person))->phone_numbers[row]);
+				if (row < PHONE_NUMBER_COUNT && (((address_book->list) + *(indexes + person))->phone_numbers[row]) != NULL)
+					strcpy(phone_buffer, ((address_book->list) + *(indexes + person))->phone_numbers[row]);
 				else
 					strcpy(phone_buffer, " ");
 
 				char email_buffer[EMAIL_ID_LEN];
-				if (row < PHONE_NUMBER_COUNT && (((address_book->list) + *(index + person))->email_addresses[row]) != NULL)
-					strcpy(email_buffer, ((address_book->list) + *(index + person))->email_addresses[row]);
+				if (row < PHONE_NUMBER_COUNT && (((address_book->list) + *(indexes + person))->email_addresses[row]) != NULL)
+					strcpy(email_buffer, ((address_book->list) + *(indexes + person))->email_addresses[row]);
 				else
 					strcpy(email_buffer, " ");
 				printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
@@ -132,19 +149,29 @@ Status list_contacts(AddressBook *address_book, const char *title, int *index, c
 			printf("=================================================================================================================\n");
 		}
 		option = get_option(CHAR, msg);
-		if (option == 'q')
+		switch (option)
 		{
+
+		case 'q':
 			ret = e_back;
+			break;
+		case 'p':
+			if (page > 0)
+			{
+				page--;
+			}
+			break;
+		case 'n':
+			if ((page + 1) * WINDOW_SIZE < address_book->count)
+			{
+				page++;
+			}
+			break;
+		default:
+			break;
 		}
-		else if (option == 'p')
-		{
-			ret = e_new_line;
-		}
-		else if (option == 'n')
-		{
-			ret = e_success;
-		}
-	} while (!(option == 'q' || (option == 'p' || option == 'n')));
+	} while (!(option == 'q'));
+
 	return ret;
 }
 
@@ -180,22 +207,12 @@ Status list_all_contacts(AddressBook *address_book, Modes mode)
 				  ": S.No : Name                             : Phone No                         : Email                            :\n"
 				  "=================================================================================================================\n";
 	const char *msg = "Press: [n] = next, Press: [p] = previous, Press: [q] | Cancel: ";
-	int indexes[WINDOW_SIZE];
+	int *indexes = malloc(sizeof(int) * address_book->count);
 	for (int person = 0; person < address_book->count; person++)
 	{
-		indexes[(person % WINDOW_SIZE)] = person;
-		if ((person + 1) % WINDOW_SIZE == 0 || person == address_book->count - 1)
-		{
-			if (person == address_book->count - 1)
-			{
-				for (int remainder = person + 1; remainder < WINDOW_SIZE; remainder++)
-				{
-					indexes[remainder] = -1; // non-existent index
-				}
-			}
-			list_contacts(address_book, title, indexes, msg, mode);
-		}
+		indexes[person] = person;
 	}
+	list_contacts(address_book, title, indexes, msg, mode);
 	return e_success;
 }
 
