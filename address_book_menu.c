@@ -224,7 +224,6 @@ Status menu(AddressBook *address_book)
 	do
 	{
 		main_menu();
-
 		option = get_option(NUM, "");
 		if ((address_book->count == 0) && (option != e_add_contact))
 		{
@@ -862,6 +861,7 @@ Status delete_contact(AddressBook *address_book)
 	MenuOptions option;
 	char *msg = "Press: [s] = Select, Press: [q] | Cancel: ";
 	ContactInfo *person;
+	ContactInfo *new_list;
 	do
 	{
 		search_contact_menu(e_delete);
@@ -924,13 +924,13 @@ Status delete_contact(AddressBook *address_book)
 				switch (option)
 				{
 				case 'Y':
+					new_list = malloc(sizeof(ContactInfo) * address_book->count-1);
 					address_book->count -= 1;
-					ContactInfo *new_list = malloc(sizeof(ContactInfo) * address_book->count);
 					if (new_list == NULL)
 					{
 						return e_fail;
 					}
-					for (int contact = 0; contact < address_book->count; contact++)
+					for (int contact = 0; contact < address_book->count+1; contact++)
 					{
 						if (((address_book->list) + contact) == person)
 						{
@@ -955,7 +955,6 @@ Status delete_contact(AddressBook *address_book)
 					}
 					free(address_book->list);
 					address_book->list = new_list;
-					break;
 				default:
 					option = e_exit;
 					break;
