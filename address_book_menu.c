@@ -408,6 +408,7 @@ Status edit_person(ContactInfo *person, MenuOptions option, Modes mode)
 	default:
 		break;
 	}
+	return e_success;
 }
 Status add_contacts(AddressBook *address_book)
 {
@@ -818,35 +819,38 @@ Status edit_contact(AddressBook *address_book)
 				userInput[string_len] = '\0';
 			break;
 		case e_no_opt: //back option
-			break;
 		default:
+			option = e_no_opt;
 			break;
 		}
-		do
+		if (option != e_no_opt)
 		{
-			if (search(userInput, address_book, address_book->count, option, msg, e_edit) == e_back)
+			do
 			{
-				return e_success;
-			}
-			printf("Select a Serial Number (S.No) to Edit: ");
-			person = getPersonBySI_NO(address_book, get_option(NUM, ""));
-		} while (person == NULL);
-		do
-		{
-			view_contact_menu(person, e_edit);
-			option = get_option(NUM, "");
-			switch (option)
+				if (search(userInput, address_book, address_book->count, option, msg, e_edit) == e_back)
+				{
+					return e_success;
+				}
+				printf("Select a Serial Number (S.No) to Edit: ");
+				person = getPersonBySI_NO(address_book, get_option(NUM, ""));
+			} while (person == NULL);
+			do
 			{
-			case e_first_opt:
-			case e_second_opt:
-			case e_third_opt:
-				edit_person(person, option, e_edit);
-				break;
-			default:
-				break;
-			}
-		} while (option != e_back);
-	} while (option != e_back);
+				view_contact_menu(person, e_edit);
+				option = get_option(NUM, "");
+				switch (option)
+				{
+				case e_first_opt:
+				case e_second_opt:
+				case e_third_opt:
+					edit_person(person, option, e_edit);
+					break;
+				default:
+					break;
+				}
+			} while (option != 0);
+		}
+	} while (option != 0);
 
 	return e_success;
 }
@@ -857,9 +861,9 @@ Status delete_contact(AddressBook *address_book)
 	char userInput[max(max(NAME_LEN, EMAIL_ID_LEN), NUMBER_LEN)]; //char array for user input.  NOTE: size set at NAME_LEN = 32.  This is ok because Phone No and Email max size is the same.
 	MenuOptions option;
 	char *msg = "Press: [s] = Select, Press: [q] | Cancel: ";
+	ContactInfo *person;
 	do
 	{
-		ContactInfo *person;
 		search_contact_menu(e_delete);
 		option = get_option(NUM, "");
 		if (option == e_exit)
@@ -897,64 +901,68 @@ Status delete_contact(AddressBook *address_book)
 				userInput[string_len] = '\0';
 			break;
 		case e_no_opt: //back option
-			break;
 		default:
+			option = e_no_opt;
 			break;
 		}
-		do
+		if (option != e_no_opt)
 		{
-			if (search(userInput, address_book, address_book->count, option, msg, e_delete) == e_back)
+			do
 			{
-				return e_success;
-			}
-			printf("Select a Serial Number (S.No) to Delete: ");
-			person = getPersonBySI_NO(address_book, get_option(NUM, ""));
-		} while (person == NULL);
-		do
-		{
-			view_contact_menu(person, e_delete);
-			option = get_option(CHAR, "");
-			int skip = 0;
-			switch (option)
+				if (search(userInput, address_book, address_book->count, option, msg, e_delete) == e_back)
+				{
+					return e_success;
+				}
+				printf("Select a Serial Number (S.No) to Delete: ");
+				person = getPersonBySI_NO(address_book, get_option(NUM, ""));
+			} while (person == NULL);
+			do
 			{
-			case 'Y':
-				address_book->count -= 1;
-				ContactInfo *new_list = malloc(sizeof(ContactInfo) * address_book->count);
-				if (new_list == NULL)
+				view_contact_menu(person, e_delete);
+				option = get_option(CHAR, "");
+				int skip = 0;
+				switch (option)
 				{
-					return e_fail;
-				}
-				for (int contact = 0; contact < address_book->count; contact++)
-				{
-					if ((address_book->list + contact) == person)
+				case 'Y':
+					address_book->count -= 1;
+					ContactInfo *new_list = malloc(sizeof(ContactInfo) * address_book->count);
+					if (new_list == NULL)
 					{
-						skip = 1;
+						return e_fail;
 					}
-					else
+					for (int contact = 0; contact < address_book->count; contact++)
 					{
-						for (int name = 0; name < NAME_COUNT; name++)
+						if (((address_book->list) + contact) == person)
 						{
-							strcpy((new_list + contact - skip)->name[name], ((address_book->list) + contact)->name[name]);
+							skip = 1;
 						}
-						for (int phone = 0; phone < PHONE_NUMBER_COUNT; phone++)
+						else
 						{
-							strcpy((new_list + contact - skip)->phone_numbers[phone], ((address_book->list) + contact)->phone_numbers[phone]);
+							for (int name = 0; name < NAME_COUNT; name++)
+							{
+								strcpy((new_list + contact - skip)->name[name], ((address_book->list) + contact)->name[name]);
+							}
+							for (int phone = 0; phone < PHONE_NUMBER_COUNT; phone++)
+							{
+								strcpy((new_list + contact - skip)->phone_numbers[phone], ((address_book->list) + contact)->phone_numbers[phone]);
+							}
+							for (int email = 0; email < EMAIL_ID_COUNT; email++)
+							{
+								strcpy((new_list + contact - skip)->email_addresses[email], ((address_book->list) + contact)->email_addresses[email]);
+							}
+							(new_list + contact - skip)->si_no = ((address_book->list) + contact)->si_no;
 						}
-						for (int email = 0; email < EMAIL_ID_COUNT; email++)
-						{
-							strcpy((new_list + contact - skip)->email_addresses[email], ((address_book->list) + contact)->email_addresses[email]);
-						}
-						(new_list + contact - skip)->si_no = ((address_book->list) + contact)->si_no;
 					}
+					free(address_book->list);
+					address_book->list = new_list;
+					break;
+				default:
+					option = e_exit;
+					break;
 				}
-				free(address_book->list);
-				address_book->list = new_list;
-			default:
-				option = e_exit;
-				break;
-			}
-		} while (option != e_back);
-	} while (option != e_back);
+			} while (option != 0);
+		}
+	} while (option != 0);
 
 	return e_success;
 }
