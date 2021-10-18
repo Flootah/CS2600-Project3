@@ -49,7 +49,7 @@ int get_option(int type, const char *msg)
 		option -= '0';
 		break;
 	}
-	getc(stdin);
+	fflush(stdin);
 	return option;
 	/* Fill the code to add above functionality */
 }
@@ -213,6 +213,7 @@ Status list_all_contacts(AddressBook *address_book, Modes mode)
 		indexes[person] = person;
 	}
 	list_contacts(address_book, title, indexes, msg, mode);
+	free(indexes);
 	return e_success;
 }
 
@@ -248,6 +249,7 @@ Status menu(AddressBook *address_book)
 			break;
 		case e_list_contacts:
 			list_all_contacts(address_book, e_list);
+			break;
 		case e_save:
 			save_file(address_book);
 			break;
@@ -744,13 +746,16 @@ Status search_contact(AddressBook *address_book)
 			if (userInput[string_len] == '\n') //sets the \n at the end of userInput to a NULL byte
 				userInput[string_len] = '\0';
 			break;
-		case e_no_opt: //back option
-			break;
+		case e_no_opt: //  invalid option
 		default:
+			option = e_no_opt;
 			break;
 		}
-		search(userInput, address_book, address_book->count, option, msg, e_search);
-	} while (option != e_exit);
+		if (option != e_no_opt)
+		{
+			search(userInput, address_book, address_book->count, option, msg, e_search);
+		}
+	} while (option != e_back);
 
 	return e_success;
 }
@@ -819,7 +824,7 @@ Status edit_contact(AddressBook *address_book)
 		}
 		do
 		{
-			if (search(userInput, address_book, address_book->count, option, msg, e_edit) == e_exit)
+			if (search(userInput, address_book, address_book->count, option, msg, e_edit) == e_back)
 			{
 				return e_success;
 			}
@@ -840,8 +845,8 @@ Status edit_contact(AddressBook *address_book)
 			default:
 				break;
 			}
-		} while (option != e_exit);
-	} while (option != e_exit);
+		} while (option != e_back);
+	} while (option != e_back);
 
 	return e_success;
 }
@@ -898,7 +903,7 @@ Status delete_contact(AddressBook *address_book)
 		}
 		do
 		{
-			if (search(userInput, address_book, address_book->count, option, msg, e_delete) == e_exit)
+			if (search(userInput, address_book, address_book->count, option, msg, e_delete) == e_back)
 			{
 				return e_success;
 			}
@@ -948,8 +953,8 @@ Status delete_contact(AddressBook *address_book)
 				option = e_exit;
 				break;
 			}
-		} while (option != e_exit);
-	} while (option != e_exit);
+		} while (option != e_back);
+	} while (option != e_back);
 
 	return e_success;
 }
