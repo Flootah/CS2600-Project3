@@ -78,75 +78,74 @@ Status save_prompt(AddressBook *address_book)
 	return e_success;
 }
 
+/**
+ * list_contacts	-	lists a single contact
+ * 
+ * @param	address_book	the address book to get info from
+ * @param	title			the title to print
+ * @param	index			array of indexes in the list to print out
+ * @param	msg				the exit message
+ * @param	mode			the mode this function was called by
+ * 
+ * @return	exit status
+ */
 Status list_contacts(AddressBook *address_book, const char *title, int *index, const char *msg, Modes mode)
 {
-	//NOTE: did not use any of the parameters except *address_book
-	int counter = 0;
-	char option;
-	system("cls");
+	int option;
+	Status ret = e_success;
 	do
 	{
-		//prints out the entry at index count
-		//printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + counter)->si_no, ((address_book->list) + counter)->name[0], ((address_book->list) + counter)->phone_numbers[0], ((address_book->list) + counter)->email_addresses[0]);
-		// char name_buffer[NAME_LEN];
-		// strcpy(name_buffer, address_book->list->name[counter]);
+		menu_header("Search result:\n\n");
+		printf(title);
 
-		// char phone_buffer[NUMBER_LEN];
-		// strcpy(phone_buffer, address_book->list->phone_numbers[counter]);
-
-		// char email_buffer[EMAIL_ID_LEN];
-		// strcpy(email_buffer, address_book->list->email_addresses[counter]);
-
-		// printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
-		// printf("\n");
-
-		char *header = ":======:==================================:==================================:==================================:\n"
-					   ": S.No : Name                             : Phone No                         : Email                            :\n"
-					   ":======:==================================:==================================:==================================:\n";
-		printf("%s", header);
-		for (int person_name = 1; person_name < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); person_name++)
+		for (int person = 0; person < WINDOW_SIZE; person++)
 		{
-			char name_buffer[NAME_LEN];
-			if (person_name < NAME_COUNT && (address_book->list->name[person_name]) != NULL)
-				strcpy(name_buffer, address_book->list->name[person_name]);
-			else
-				strcpy(name_buffer, " ");
+			if (index[person] == -1)
+			{
+				break;
+			}
+			// print main information
+			printf(": %-4d : %-32s : %-32s : %-32s :\n", ((address_book->list) + index[person])->si_no, ((address_book->list) + index[person])->name[0], ((address_book->list) + index[person])->phone_numbers[0], ((address_book->list) + index[person])->email_addresses[0]);
+			// print additional information
+			for (int row = 1; row < max(max(NAME_COUNT, PHONE_NUMBER_COUNT), EMAIL_ID_COUNT); row++)
+			{
+				char name_buffer[NAME_LEN];
+				if (row < NAME_COUNT && (((address_book->list) + index[person])->name[row]) != NULL)
+					strcpy(name_buffer, ((address_book->list) + index[person])->name[row]);
+				else
+					strcpy(name_buffer, " ");
 
-			char phone_buffer[NUMBER_LEN];
-			if (person_name < PHONE_NUMBER_COUNT && (address_book->list->phone_numbers[person_name]) != NULL)
-				strcpy(phone_buffer, address_book->list->phone_numbers[person_name]);
-			else
-				strcpy(phone_buffer, " ");
+				char phone_buffer[NUMBER_LEN];
+				if (row < PHONE_NUMBER_COUNT && (((address_book->list) + *(index + person))->phone_numbers[row]) != NULL)
+					strcpy(phone_buffer, ((address_book->list) + *(index + person))->phone_numbers[row]);
+				else
+					strcpy(phone_buffer, " ");
 
-			char email_buffer[EMAIL_ID_LEN];
-			if (person_name < PHONE_NUMBER_COUNT && (address_book->list->email_addresses[person_name]) != NULL)
-				strcpy(email_buffer, address_book->list->email_addresses[person_name]);
-			else
-				strcpy(email_buffer, " ");
-			printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
-			printf("\n");
+				char email_buffer[EMAIL_ID_LEN];
+				if (row < PHONE_NUMBER_COUNT && (((address_book->list) + *(index + person))->email_addresses[row]) != NULL)
+					strcpy(email_buffer, ((address_book->list) + *(index + person))->email_addresses[row]);
+				else
+					strcpy(email_buffer, " ");
+				printf(": %-4s : %-32s : %-32s : %-32s :", " ", name_buffer, phone_buffer, email_buffer);
+				printf("\n");
+			}
+			printf("=================================================================================================================\n");
 		}
-		printf(":======:==================================:==================================:==================================:\n");
-
-		//printf("Press: [q] | Cancel, [n] | next page, [p] | prev. page: "); //asks the user if they want to go to next page, prev page, or exit.
-		option = get_option(CHAR, "Press: [q] | Cancel, [n] | next page, [p] | prev. page: ");
-		if (option == 'n')
+		option = get_option(CHAR, msg);
+		if (option == 'q')
 		{
-			if (counter > (address_book->count)) //checks to see if the user is already at the last page.
-				printf("There is no next page.");
-			else
-				counter++;
+			ret = e_back;
 		}
 		else if (option == 'p')
 		{
-			if (counter == 0) //checks to see if the user is already at the first page.
-				printf("There is no previous page.\n");
-			else
-				counter--;
+			ret = e_new_line;
 		}
-		//system("cls");
-	} while (option != 'q');
-	return e_success;
+		else if (option == 'n')
+		{
+			ret = e_success;
+		}
+	} while (!(option == 'q' || (option == 'p' || option == 'n')));
+	return ret;
 }
 
 void menu_header(const char *str)
@@ -175,13 +174,35 @@ void main_menu(void)
 	printf("\n");
 	printf("Please select an option: ");
 }
+Status list_all_contacts(AddressBook *address_book, Modes mode)
+{
+	char *title = "=================================================================================================================\n"
+				  ": S.No : Name                             : Phone No                         : Email                            :\n"
+				  "=================================================================================================================\n";
+	const char *msg = "Press: [n] = next, Press: [p] = previous, Press: [q] | Cancel: ";
+	int indexes[WINDOW_SIZE];
+	for (int person = 0; person < address_book->count; person++)
+	{
+		indexes[(person % WINDOW_SIZE)] = person;
+		if ((person + 1) % WINDOW_SIZE == 0 || person == address_book->count - 1)
+		{
+			if (person == address_book->count - 1)
+			{
+				for (int remainder = person + 1; remainder < WINDOW_SIZE; remainder++)
+				{
+					indexes[remainder] = -1; // non-existent index
+				}
+			}
+			list_contacts(address_book, title, indexes, msg, mode);
+		}
+	}
+	return e_success;
+}
 
 Status menu(AddressBook *address_book)
 {
-	ContactInfo backup;
 	Status ret;
 	int option;
-
 	do
 	{
 		main_menu();
@@ -197,11 +218,9 @@ Status menu(AddressBook *address_book)
 		switch (option)
 		{
 		case e_add_contact:
-			/* Add your implementation to call add_contacts function here */
 			add_contacts(address_book);
 			break;
 		case e_search_contact:
-
 			search_contact(address_book);
 			break;
 		case e_edit_contact:
@@ -211,11 +230,7 @@ Status menu(AddressBook *address_book)
 			delete_contact(address_book);
 			break;
 		case e_list_contacts:
-			for (int person = 0; person < address_book->count; person++)
-			{
-				list_contacts(address_book, "Contacts:", &person, "Press: [n] = next, Press: [p] = previous, Press: [q] | Cancel: ", e_list);
-			}
-			break;
+			list_all_contacts(address_book, e_list);
 		case e_save:
 			save_file(address_book);
 			break;
@@ -423,33 +438,6 @@ Status add_contacts(AddressBook *address_book)
 
 	return e_success;
 }
-int exit_search(const char *msg, Modes mode)
-{
-	int option = get_option(CHAR, msg);
-	switch (mode)
-	{
-	case e_search:
-		if (option == 'q')
-		{
-			return e_exit;
-		}
-		break;
-	case e_edit:
-	case e_delete:
-		if (option == 'q')
-		{
-			return e_exit;
-		}
-		else if (option == 's')
-		{
-			return e_success;
-		}
-		break;
-	default:
-		break;
-	}
-	return -1;
-}
 
 /**
  * search	- 	performs a search on address_book. it tries to find the field 
@@ -465,6 +453,7 @@ int exit_search(const char *msg, Modes mode)
 Status search(const char *str, AddressBook *address_book, int loop_count, int field, const char *msg, Modes mode)
 {
 	int exit_status;
+	int option;
 	Status ret; //function will assign e_fail or e_success to this and return this.
 	do
 	{
@@ -656,8 +645,12 @@ Status search(const char *str, AddressBook *address_book, int loop_count, int fi
 		default:
 			break;
 		}
-		ret = exit_search(msg, mode);
-	} while (!(ret == e_exit || ret == e_success));
+		option = get_option(CHAR, msg);
+		if (option == 'q')
+		{
+			ret = e_back;
+		}
+	} while (!(option == 'q' || ((mode == e_edit || mode == e_delete) && option == 's')));
 	return ret;
 }
 

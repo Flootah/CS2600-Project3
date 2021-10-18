@@ -37,7 +37,7 @@ char *strtok_new(char *line)
 	return riturn;
 }
 /**
- * getfield	- returns the fieldNumth field from line, based on the FIELD_DELIMITER
+ * getfield	- writes the field into buff, and returns a pointer to it
  */
 const char *getfield(char *buff, char *line, int field_num)
 {
